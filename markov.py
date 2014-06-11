@@ -3,19 +3,44 @@ import random
 
 from sys import argv
 
+def combine_files(script, filename, filename1):
+    # Change this to read input_text from a file
+    input_list = []
+
+    first_text = open(filename, "r")
+    first_text = first_text.read().split()
+    second_text = open(filename1, "r")
+    second_text = second_text.read().split()
+
+    input_list = first_text + second_text
+
+    return input_list
 
 def make_chains(corpus):
     """Takes an input text as a string and returns a dictionary of
     markov chains."""
-    bag_of_words = corpus.read().split()
+    bag_of_words = corpus
     chains = {}
 
-    for i in range(len(bag_of_words) - 2): # i the index
-        if (bag_of_words[i], bag_of_words[i + 1]) not in chains:
-            chains[(bag_of_words[i], bag_of_words[i + 1])] = [bag_of_words[i + 2]] # helps us avoid making the same keys?
+    """tuple key"""
+    key = raw_input("How long do you want the tuple key to be? >>> ") #3
+
+    key = int(key)
+
+    # for i in range(key):
+    #     tuple_key = bag_of_word[i:key]
+
+    for i in range(len(bag_of_words) - key): # i the index
+        #tuple_key = (bag_of_words[i], bag_of_words[i + 1])
+        
+        tuple_key = tuple(bag_of_words[i:i + key])
+        print tuple_key
+        value = [bag_of_words[i + key]]
+        print value
+        if chains.get(tuple_key, 0):
+            chains[tuple_key] += value
         else:
-            chains[(bag_of_words[i], bag_of_words[i + 1])] += [bag_of_words[i + 2]] #helps us avoid overwriting previous values
-    #print chains
+            chains[tuple_key] = value
     return chains
 
 def get_random_start(chains):
@@ -38,23 +63,26 @@ def make_text(get_random_words_1, get_random_words_2):
     return random_text
 
 def main():
-    script, filename = argv
+    script, filename, filename1 = argv
 
-    # Change this to read input_text from a file
-    input_text = open(filename, "r")#.read()
+    input_list = combine_files(script, filename, filename1)
 
-    chain_dict = make_chains(input_text)
+    # # Change this to read input_text from a file
+    # input_text = open(filename, "r")
 
-    x = 0
+    chain_dict = make_chains(input_list)
+
+
+
     string = ""
 
-    while x < 10: 
+    for x in range(10): 
         random_key = get_random_start(chain_dict)
         random_value = get_next_word(random_key, chain_dict)
         string += (" " + random_value)
-        x += 1
 
     print string
 
 if __name__ == "__main__":
     main()
+
